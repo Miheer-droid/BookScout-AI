@@ -162,7 +162,7 @@ BookScout-AI
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/BookScout-AI.git
+git clone https://github.com/Miheer-droid/BookScout-AI.git
 
 cd BookScout-AI
 ```
