@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Development documents
+CLAUDE.md
+PROJECT.md
+TASKS.md
+
+# Python build files
+build/
+dist/
+*.egg-info/
+
+# PyInstaller
+*.spec

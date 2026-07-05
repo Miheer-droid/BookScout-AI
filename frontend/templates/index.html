@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookScout AI — Smart Book Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+</head>
+<body>
+  <!-- Ambient background orbs -->
+  <div class="bg-orb bg-orb--amber"></div>
+  <div class="bg-orb bg-orb--blue"></div>
+  <div class="bg-orb bg-orb--purple"></div>
+
+  <div id="app">
+
+    <!-- ===================== LANDING STATE ===================== -->
+    <section id="landing" class="state state--active">
+      <div class="landing__container">
+        <div class="landing__badge">
+          <span class="landing__badge-dot"></span>
+          AI-Powered Book Research
+        </div>
+        <h1 class="landing__title">
+          <span class="gradient-text">BookScout AI</span>
+        </h1>
+        <p class="landing__subtitle">
+          Research books before you invest your time and money.<br />
+          <span class="landing__subtitle-muted">Get AI-curated recommendations with reviews, pricing &amp; difficulty analysis.</span>
+        </p>
+
+        <form id="research-form" class="landing__form" autocomplete="off">
+          <div class="textarea-wrapper">
+            <textarea
+              id="query-input"
+              class="landing__textarea"
+              rows="4"
+              placeholder="e.g. I want to learn about stoicism and practical philosophy for everyday life..."
+              required
+            ></textarea>
+            <div class="textarea-glow"></div>
+          </div>
+
+          <div class="pill-group" id="level-group">
+            <span class="pill-group__label">Your level</span>
+            <div class="pill-group__options">
+              <button type="button" class="pill-option" data-value="Complete beginner">Complete beginner</button>
+              <button type="button" class="pill-option" data-value="Some basics">Some basics</button>
+              <button type="button" class="pill-option" data-value="Comfortable">Comfortable</button>
+              <button type="button" class="pill-option" data-value="Advanced">Advanced</button>
+            </div>
+          </div>
+
+          <div class="pill-group" id="goal-group">
+            <span class="pill-group__label">Your goal</span>
+            <div class="pill-group__options">
+              <button type="button" class="pill-option" data-value="Learn from scratch">Learn from scratch</button>
+              <button type="button" class="pill-option" data-value="Go deeper">Go deeper</button>
+              <button type="button" class="pill-option" data-value="Just for fun">Just for fun</button>
+              <button type="button" class="pill-option" data-value="Reference material">Reference material</button>
+            </div>
+          </div>
+
+          <button type="submit" id="research-btn" class="btn btn--primary">
+            <span class="btn__icon">🔍</span>
+            <span class="btn__text">Research Books</span>
+            <span class="btn__shimmer"></span>
+          </button>
+        </form>
+
+        <div class="landing__examples">
+          <span class="landing__examples-label">Try:</span>
+          <button class="example-chip" data-query="Best books on deep learning and neural networks for someone with a math background">"Deep learning books"</button>
+          <button class="example-chip" data-query="I want a gripping sci-fi novel similar to Project Hail Mary or The Martian">"Sci-fi like Project Hail Mary"</button>
+          <button class="example-chip" data-query="Practical personal finance books for someone in their 20s just starting their career">"Personal finance for beginners"</button>
+          <button type="button" id="surprise-btn" class="example-chip example-chip--surprise">🎲 Surprise me</button>
+        </div>
+
+        <footer class="landing__footer">
+          <span class="footer__dot"></span>
+          Powered by Local AI &bull; Ollama + qwen3:8b
+        </footer>
+      </div>
+    </section>
+
+    <!-- ===================== PROCESSING STATE ===================== -->
+    <section id="processing" class="state">
+      <div class="processing__container">
+        <div class="processing__header">
+          <h2 class="processing__title">
+            <span class="gradient-text">Researching...</span>
+          </h2>
+          <p class="processing__subtitle" id="processing-query"></p>
+        </div>
+
+        <div class="processing__progress">
+          <div class="progress-bar">
+            <div class="progress-bar__fill" id="progress-fill"></div>
+          </div>
+          <span class="progress-bar__label" id="progress-label">Starting...</span>
+        </div>
+
+        <div class="workflow-timeline" id="workflow-timeline">
+          <div class="workflow-step" data-agent="understanding">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">🧠</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Understanding your interests</span>
+              <span class="workflow-step__message"></span>
+              <div class="workflow-step__detail" id="detail-understanding"></div>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+
+          <div class="workflow-step" data-agent="planning">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">🔍</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Planning research strategy</span>
+              <span class="workflow-step__message"></span>
+              <div class="workflow-step__detail" id="detail-planning"></div>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+
+          <div class="workflow-step" data-agent="search">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">📚</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Finding relevant books</span>
+              <span class="workflow-step__message"></span>
+              <div class="workflow-step__detail" id="detail-search"></div>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+
+          <div class="workflow-step" data-agent="reviews">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">⭐</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Researching reviews &amp; ratings</span>
+              <span class="workflow-step__message"></span>
+              <div class="workflow-step__detail" id="detail-reviews"></div>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+
+          <div class="workflow-step" data-agent="pricing">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">💰</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Comparing prices</span>
+              <span class="workflow-step__message"></span>
+              <div class="workflow-step__detail" id="detail-pricing"></div>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+
+          <div class="workflow-step" data-agent="analysis">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">📖</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Analyzing reading difficulty</span>
+              <span class="workflow-step__message"></span>
+              <div class="workflow-step__detail" id="detail-analysis"></div>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+
+          <div class="workflow-step" data-agent="recommendation">
+            <div class="workflow-step__indicator">
+              <span class="workflow-step__emoji">🏆</span>
+              <span class="workflow-step__check">✓</span>
+            </div>
+            <div class="workflow-step__content">
+              <span class="workflow-step__label">Ranking recommendations</span>
+              <span class="workflow-step__message"></span>
+            </div>
+            <div class="workflow-step__pulse"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS STATE ===================== -->
+    <section id="results" class="state">
+      <div class="results__container">
+
+        <!-- Results Header -->
+        <div class="results__header">
+          <h2 class="results__title">
+            <span class="gradient-text">Your Recommendations</span>
+          </h2>
+          <p class="results__subtitle" id="results-query"></p>
+        </div>
+
+        <!-- Confidence Meter -->
+        <div class="confidence-meter" id="confidence-meter">
+          <div class="confidence-meter__bar">
+            <div class="confidence-meter__fill" id="confidence-fill"></div>
+          </div>
+          <span class="confidence-meter__label" id="confidence-label"></span>
+        </div>
+
+        <!-- Top Pick Hero Card -->
+        <div class="top-pick" id="top-pick">
+          <div class="top-pick__badge">📖 STAFF PICK</div>
+          <div class="top-pick__content">
+            <div class="top-pick__main">
+              <h3 class="top-pick__title" id="top-pick-title"></h3>
+              <p class="top-pick__author" id="top-pick-author"></p>
+              <p class="top-pick__description" id="top-pick-description"></p>
+
+              <div class="top-pick__reasons" id="top-pick-reasons">
+                <h4 class="section-label">Why this recommendation?</h4>
+              </div>
+            </div>
+
+            <div class="top-pick__details">
+              <div class="detail-card" id="top-pick-reviews">
+                <h4 class="detail-card__title">⭐ Reviews</h4>
+                <div class="detail-card__body"></div>
+              </div>
+              <div class="detail-card" id="top-pick-pricing">
+                <h4 class="detail-card__title">💰 Pricing</h4>
+                <div class="detail-card__body"></div>
+              </div>
+              <div class="detail-card" id="top-pick-difficulty">
+                <h4 class="detail-card__title">📖 Reading Difficulty</h4>
+                <div class="detail-card__body"></div>
+              </div>
+            </div>
+
+            <div class="top-pick__sources" id="top-pick-sources">
+              <h4 class="section-label">Sources Used</h4>
+            </div>
+
+            <div class="top-pick__score" id="top-pick-score">
+              <div class="score-ring">
+                <svg viewBox="0 0 120 120">
+                  <circle class="score-ring__bg" cx="60" cy="60" r="52" />
+                  <circle class="score-ring__fill" cx="60" cy="60" r="52" id="score-ring-fill" />
+                </svg>
+                <span class="score-ring__value" id="score-ring-value"></span>
+              </div>
+              <span class="score-ring__label">Match Score</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alternatives Section -->
+        <div class="alternatives-section" id="alternatives-section">
+          <h3 class="alternatives__title">
+            <span>📚</span> Alternative Recommendations
+          </h3>
+          <div class="alternatives-grid" id="alternatives-grid"></div>
+        </div>
+
+        <!-- AI Reasoning -->
+        <div class="reasoning-card" id="reasoning-card">
+          <div class="reasoning-card__header">
+            <span>🤖</span>
+            <h4>AI Reasoning</h4>
+          </div>
+          <blockquote class="reasoning-card__body" id="reasoning-text"></blockquote>
+        </div>
+
+        <!-- Error display -->
+        <div class="error-card" id="error-card" style="display:none;">
+          <div class="error-card__header">
+            <span>⚠️</span>
+            <h4>Something went wrong</h4>
+          </div>
+          <p class="error-card__body" id="error-text"></p>
+        </div>
+
+        <!-- Start Over -->
+        <div class="results__actions">
+          <button id="start-over-btn" class="btn btn--secondary">
+            <span class="btn__icon">↩</span>
+            <span class="btn__text">Start Over</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Alternative card template -->
+  <template id="alternative-card-template">
+    <div class="alt-card">
+      <div class="alt-card__rank"></div>
+      <div class="alt-card__content">
+        <h4 class="alt-card__title"></h4>
+        <p class="alt-card__author"></p>
+        <p class="alt-card__description"></p>
+        <div class="alt-card__meta">
+          <span class="alt-card__difficulty"></span>
+          <span class="alt-card__score"></span>
+        </div>
+        <div class="alt-card__reviews-summary"></div>
+        <div class="alt-card__pricing-info"></div>
+        <button class="alt-card__why-not-btn">
+          <span>Why not this?</span>
+          <span class="alt-card__chevron">▾</span>
+        </button>
+        <div class="alt-card__why-not-body">
+          <div class="alt-card__reasons-list"></div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
